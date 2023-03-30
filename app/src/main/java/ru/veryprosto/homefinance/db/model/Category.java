@@ -49,6 +49,6 @@ public class Category {
 
     @Override
     public String toString() {
-        return (isOutput ? "Расход" : "Доход") + " " + name;
+        return name;
     }
 }
