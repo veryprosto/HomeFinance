@@ -1,12 +1,16 @@
 package ru.veryprosto.homefinance.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.List;
 
@@ -27,6 +31,8 @@ public class WalletAdapter extends ArrayAdapter<Wallet> {
         this.inflater = LayoutInflater.from(context);
     }
 
+    @SuppressLint("SetTextI18n")
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public View getView(int position, View convertView, ViewGroup parent) {
         mainController = MainController.getInstance();
 
@@ -43,7 +49,7 @@ public class WalletAdapter extends ArrayAdapter<Wallet> {
         final Wallet wallet = walletList.get(position);
 
         viewHolder.nameView.setText(wallet.getName());
-        viewHolder.summView.setText("10000");
+        viewHolder.summView.setText(wallet.getTotal().toString());
 
         viewHolder.removeButton.setOnClickListener(v -> {
             mainController.removeWallet(wallet);

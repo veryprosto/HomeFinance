@@ -1,9 +1,15 @@
 package ru.veryprosto.homefinance.db.model;
 
-import androidx.annotation.NonNull;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.math.BigDecimal;
+import java.util.Collection;
 
 @DatabaseTable(tableName = "wallet")
 public class Wallet {
@@ -13,11 +19,22 @@ public class Wallet {
     @DatabaseField(unique = true, canBeNull = false)
     private String name;
 
+    @ForeignCollectionField(eager = true)
+    private Collection<Operation> operations;
+
     public Wallet() {
     }
 
     public Wallet(String name) {
         this.name = name;
+    }
+
+    public Collection<Operation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(Collection<Operation> operations) {
+        this.operations = operations;
     }
 
     public Integer getId() {
@@ -32,9 +49,15 @@ public class Wallet {
         this.name = name;
     }
 
-    @NonNull
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public BigDecimal getTotal() {
+        return operations.stream().map(Operation::getSumm).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public String toString() {
-        return name;
+        return name + " " + getTotal();
     }
 }

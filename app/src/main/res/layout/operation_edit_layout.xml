@@ -18,14 +18,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/input_date"
+    <Button
+        android:id="@+id/pick_date_button"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
         android:background="#FBD102"
-        android:hint="Дата в формате дд.мм.гггг"
-        android:inputType="date"
+        android:text="Select Date"
+        android:textAlignment="textStart"
+        android:textSize="18sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_name" />
 
@@ -37,7 +38,7 @@
         android:background="#FBD102"
         android:hint="Кошелёк"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_date" />
+        app:layout_constraintTop_toBottomOf="@id/pick_date_button" />
 
     <Spinner
         android:id="@+id/categorySpinner"
