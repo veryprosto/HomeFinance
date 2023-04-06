@@ -6,19 +6,15 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import ru.veryprosto.homefinance.MainController;
 import ru.veryprosto.homefinance.R;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    MainController mainController;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mainController = MainController.getInstance();
 
         Button balanceButton = findViewById(R.id.balanceBtn);
         Button operationButton = findViewById(R.id.operationBtn);

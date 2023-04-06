@@ -6,17 +6,17 @@ import java.util.Date;
 
 public class Util {
 
+    private static SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+
     public static String dateToString(Date date) {
-        SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
-        return formater.format(date);
+        return format.format(date);
     }
 
-    public static Date StringToDate(String stringDate, String format) {
-        SimpleDateFormat formater = new SimpleDateFormat(format);
+    public static Date stringToDate(String stringDate) {
         try {
-            return formater.parse(stringDate);
+            return format.parse(stringDate);
         } catch (ParseException e) {
-            throw new RuntimeException(e); //todo
+            throw new RuntimeException(e); //todo обработать!
         }
     }
 }

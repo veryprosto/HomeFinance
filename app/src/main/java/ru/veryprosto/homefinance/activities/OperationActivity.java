@@ -1,9 +1,11 @@
 package ru.veryprosto.homefinance.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 
@@ -34,23 +36,25 @@ import ru.veryprosto.homefinance.util.Util;
 public class OperationActivity extends AppCompatActivity {
     private MainController mainController;
     private ExpandableListView operationElv;
-    private Button pickDateButton;
+
     private Date startPeriod;
     private Date endPeriod;
+    private boolean isOutput;
+    private boolean isInput;
     private List<Operation> operations;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.operation_layout);
-
         init();
-        fillOperationElv();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
+    @SuppressLint("SetTextI18n")
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void init() {
         mainController = MainController.getInstance();
 
@@ -60,15 +64,20 @@ public class OperationActivity extends AppCompatActivity {
         cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
         endPeriod = cal.getTime();
 
-        pickDateButton = findViewById(R.id.pickDateBtn);
-        pickDateButton.setText(Util.dateToString(startPeriod) + "\n" + Util.dateToString(endPeriod));
+        isOutput = true;
+        isInput = true;
 
         initPickDateButton();
+        initAddOperationButtons();
+        initReturnMenuButton();
+        initCheckBoxes();
+        fillOperationElv();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void fillOperationElv(){
-        operations = mainController.getOperationBetweenDates(startPeriod, endPeriod);
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void fillOperationElv() {
+        operations = mainController.getOperationByDatesAndTypes(startPeriod, endPeriod, isOutput, isInput);
 
         List<Map<String, String>> parentData = new ArrayList<>();
         List<List<Map<String, String>>> childData = new ArrayList<>();
@@ -76,7 +85,6 @@ public class OperationActivity extends AppCompatActivity {
         Map<String, String> tempMap;
 
         Map<Date, List<Operation>> operationMapByDate = operations.stream().collect(Collectors.groupingBy(Operation::getDate));
-
 
         Comparator<Date> comparator = Comparator.naturalOrder();
 
@@ -123,9 +131,12 @@ public class OperationActivity extends AppCompatActivity {
         operationElv.setAdapter(adapter);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void initPickDateButton(){
+    @SuppressLint("SetTextI18n")
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void initPickDateButton() {
         MaterialDatePicker.Builder<Pair<Long, Long>> materialDateBuilder = MaterialDatePicker.Builder.dateRangePicker();
+
+        Button pickDateButton = findViewById(R.id.pickDateBtn);
 
         materialDateBuilder.setTitleText("SELECT A DATE");
 
@@ -135,13 +146,64 @@ public class OperationActivity extends AppCompatActivity {
                 v -> materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER"));
 
         materialDatePicker.addOnPositiveButtonClickListener(
-                (MaterialPickerOnPositiveButtonClickListener) selection -> {
+                (MaterialPickerOnPositiveButtonClickListener<? super Pair<Long, Long>>) selection -> {
                     Pair<Long, Long> pairOfDates = (Pair<Long, Long>) materialDatePicker.getSelection();
-                    startPeriod = new Date(pairOfDates.first);
-                    endPeriod = new Date(pairOfDates.second);
-
+                    if (pairOfDates != null) {
+                        startPeriod = new Date(pairOfDates.first);
+                        endPeriod = new Date(pairOfDates.second);
+                    }
                     pickDateButton.setText(Util.dateToString(startPeriod) + "\n" + Util.dateToString(endPeriod));
                     fillOperationElv();
                 });
+
+        pickDateButton.setText(Util.dateToString(startPeriod) + "\n" + Util.dateToString(endPeriod));
+    }
+
+    private void initAddOperationButtons() {
+        Button addInputOperationButton = findViewById(R.id.addInputOperationBtn);
+        addInputOperationButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, OperationEditActivity.class);
+            intent.putExtra("isOutputOperation", false);
+            startActivity(intent);
+        });
+
+        Button addOutputOperationButton = findViewById(R.id.addOutputOperationBtn);
+
+        addOutputOperationButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, OperationEditActivity.class);
+            intent.putExtra("isOutputOperation", true);
+            startActivity(intent);
+        });
+    }
+
+    private void initReturnMenuButton() {
+        Button returnMenuBtn = findViewById(R.id.returnMenuBtn);
+        returnMenuBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void initCheckBoxes() {
+        CheckBox outputOperationsCheckBox = findViewById(R.id.outputOperationsCheckBox);
+
+        outputOperationsCheckBox.setChecked(true);
+
+        outputOperationsCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            isOutput = isChecked;
+            fillOperationElv();
+        });
+
+        CheckBox inputOperationsCheckBox = findViewById(R.id.inputOperationsCheckBox);
+        boolean inputOperations = inputOperationsCheckBox.isChecked();
+
+        inputOperationsCheckBox.setChecked(true);
+
+        inputOperationsCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            isInput = isChecked;
+            fillOperationElv();
+        });
+
     }
 }

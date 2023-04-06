@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,23 +15,37 @@
 
     <Button
         android:id="@+id/addInputOperationBtn"
-        android:layout_width="165dp"
+        android:layout_width="107dp"
         android:layout_height="65dp"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
-        android:text="доход"
-        android:textSize="25sp"
+        android:backgroundTint="@android:color/holo_green_dark"
+        android:text="+"
+        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/addOutputOperationBtn"
-        android:layout_width="165dp"
+        android:layout_width="107dp"
+        android:layout_height="65dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:text="-"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/addInputOperationBtn" />
+
+    <Button
+        android:id="@+id/returnMenuBtn"
+        android:layout_width="107dp"
         android:layout_height="65dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:text="расход"
-        android:textSize="25sp"
+        android:backgroundTint="@color/purple_700"
+        android:text="menu"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

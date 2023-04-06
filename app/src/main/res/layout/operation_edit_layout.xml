@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
+
+    <TextView
+        android:id="@+id/operationEditTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text=""
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/input_name"
         style="@style/Widget.AppCompat.EditText"
         android:layout_width="250dp"
         android:layout_height="50dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="100dp"
         android:background="#FBD102"
         android:hint="Описание операции"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -55,11 +66,11 @@
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:inputType="number"
         android:background="#FBD102"
         android:hint="Сумма"
+        android:inputType="number"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/categorySpinner"/>
+        app:layout_constraintTop_toBottomOf="@+id/categorySpinner" />
 
     <Button
         android:id="@+id/saveOperationBtn"
@@ -81,6 +92,5 @@
         android:text="+"
         app:layout_constraintStart_toEndOf="@+id/categorySpinner"
         app:layout_constraintTop_toTopOf="@id/categorySpinner" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

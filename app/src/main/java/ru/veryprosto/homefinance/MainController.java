@@ -1,6 +1,14 @@
 package ru.veryprosto.homefinance;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.j256.ormlite.stmt.Where;
+
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -32,34 +40,31 @@ public class MainController {
     }
 
     //------------ Create operations start ------------
-    public Wallet createWallet(Wallet wallet) {
+    public void createWallet(Wallet wallet) {
         try {
             walletDAO.create(wallet);
         } catch (SQLException e) {
             throw new RuntimeException(e);
             // TODO: Обработать исключение, в т.ч. если кошелек с таким именем существует
         }
-        return wallet;
     }
 
-    public Operation createOperation(Operation operation) {
+    public void createOperation(Operation operation) {
         try {
             operationDAO.create(operation);
         } catch (SQLException e) {
             throw new RuntimeException(e);
             // TODO: Обработать исключение
         }
-        return operation;
     }
 
-    public Category createCategory(Category category) {
+    public void createCategory(Category category) {
         try {
             categoryDAO.create(category);
         } catch (SQLException e) {
             throw new RuntimeException(e);
             // TODO: Обработать исключение, в т.ч. если категория существует
         }
-        return category;
     }
     //------------ Create operations end -----------
 
@@ -74,10 +79,10 @@ public class MainController {
         return walletList;
     }
 
-    public List<Category> getCategories() {
+    public List<Category> getCategoriesByType(Boolean isOutput) {
         List<Category> categories;
         try {
-            categories = categoryDAO.queryForAll();
+            categories = categoryDAO.queryBuilder().where().eq("isOutput", isOutput).query();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -92,12 +97,25 @@ public class MainController {
         }
     }
 
-    public List<Operation> getOperationBetweenDates(Date start, Date end) { //todo доделать возможность фильтра выборки по категориям и кошелькам
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public List<Operation> getOperationByDatesAndTypes(Date start, Date end, boolean isOutput, boolean isInput) { //todo рефактор - создать утильный класс DateRange
+        if (!isOutput && !isInput) {
+            return new ArrayList<>();
+        }
+
         if (start == null) start = new GregorianCalendar(1900, 0, 1).getTime();
         if (end == null) end = new GregorianCalendar(5000, 0, 1).getTime();
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(start);
+        calendar.add(Calendar.DATE, -1);
+        start = calendar.getTime();
+
         try {
-            return operationDAO.queryBuilder().where().between("date", start, end).query();
+            Where<Operation, Integer> where = operationDAO.queryBuilder().where();
+
+            return where.and(where.between("date", start, end), where.or(where.eq("isOutput", isOutput), where.eq("isOutput", !isInput))).query();
+
         } catch (SQLException e) {
             throw new RuntimeException(e); //TODO: Обработать исключение
         }
@@ -109,8 +127,7 @@ public class MainController {
         try {
             walletDAO.delete(wallet);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-            //TODO: Обработать исключение
+            throw new RuntimeException(e);//TODO: Обработать исключение
         }
     }
 

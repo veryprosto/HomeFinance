@@ -26,9 +26,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "homefinance.db";
 
     //с каждым увеличением версии, при нахождении в устройстве БД с предыдущей версией будет выполнен метод onUpgrade();
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 6;
 
-    //ссылки на DAO соответсвующие сущностям, хранимым в БД
+    //ссылки на DAO соответствующие сущностям, хранимым в БД
     private WalletDAO walletDAO = null;
     private OperationDAO operationDAO = null;
     private CategoryDAO categoryDAO = null;
