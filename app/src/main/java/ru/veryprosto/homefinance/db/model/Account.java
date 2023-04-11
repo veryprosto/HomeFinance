@@ -11,30 +11,26 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.math.BigDecimal;
 import java.util.Collection;
 
-@DatabaseTable(tableName = "wallet")
-public class Wallet {
+@DatabaseTable
+public class Account {
     @DatabaseField(generatedId = true)
     private Integer id;
 
     @DatabaseField(unique = true, canBeNull = false)
     private String name;
 
+    @DatabaseField(canBeNull = false)
+    private AccountType type;
+
     @ForeignCollectionField(eager = true)
     private Collection<Operation> operations;
 
-    public Wallet() {
+    public Account() {
     }
 
-    public Wallet(String name) {
+    public Account(String name, AccountType type) {
         this.name = name;
-    }
-
-    public Collection<Operation> getOperations() {
-        return operations;
-    }
-
-    public void setOperations(Collection<Operation> operations) {
-        this.operations = operations;
+        this.type = type;
     }
 
     public Integer getId() {
@@ -49,6 +45,21 @@ public class Wallet {
         this.name = name;
     }
 
+    public AccountType getType() {
+        return type;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
+    }
+
+    public Collection<Operation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(Collection<Operation> operations) {
+        this.operations = operations;
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public BigDecimal getTotal() {
@@ -58,6 +69,6 @@ public class Wallet {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public String toString() {
-        return name + " " + getTotal();
+        return name;
     }
 }

@@ -6,48 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
-    <ExpandableListView
-        android:id="@+id/elvMain"
-        android:layout_width="match_parent"
-        android:layout_height="470dp"
-        android:layout_marginTop="100dp"
+
+    <TextView
+        android:id="@+id/operationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="ОПЕРАЦИИ"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/addInputOperationBtn"
-        android:layout_width="107dp"
-        android:layout_height="65dp"
+        android:id="@+id/pickDateBtn"
+        android:layout_width="155dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
-        android:backgroundTint="@android:color/holo_green_dark"
-        android:text="+"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/addOutputOperationBtn"
-        android:layout_width="107dp"
-        android:layout_height="65dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
-        android:backgroundTint="@android:color/holo_red_dark"
-        android:text="-"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/addInputOperationBtn" />
-
-    <Button
-        android:id="@+id/returnMenuBtn"
-        android:layout_width="107dp"
-        android:layout_height="65dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:backgroundTint="@color/purple_700"
-        android:text="menu"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:text=""
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/elvMain"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="SmallSp" />
 
     <CheckBox
         android:id="@+id/inputOperationsCheckBox"
@@ -69,28 +51,58 @@
         app:layout_constraintBottom_toTopOf="@+id/elvMain"
         app:layout_constraintEnd_toStartOf="@+id/inputOperationsCheckBox" />
 
-    <Button
-        android:id="@+id/pickDateBtn"
-        android:layout_width="155dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
-        android:text=""
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/elvMain"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="SmallSp" />
-
-    <TextView
-        android:id="@+id/operationTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="ОПЕРАЦИИ"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+    <ExpandableListView
+        android:id="@+id/elvMain"
+        android:layout_width="match_parent"
+        android:layout_height="470dp"
+        android:layout_marginTop="100dp"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/addInputOperationBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginBottom="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/addOutputOperationBtn"
+        app:srcCompat="@drawable/input" />
+
+    <ImageButton
+        android:id="@+id/addOutputOperationBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginBottom="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/addTransferOperationBtn"
+
+        app:srcCompat="@drawable/output" />
+
+    <ImageButton
+        android:id="@+id/addTransferOperationBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginBottom="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/returnMenuBtn"
+        app:srcCompat="@drawable/transfer" />
+
+    <ImageButton
+        android:id="@+id/returnMenuBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginBottom="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/menu" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

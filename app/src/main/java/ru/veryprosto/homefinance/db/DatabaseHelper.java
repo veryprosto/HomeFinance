@@ -12,10 +12,10 @@ import java.sql.SQLException;
 
 import ru.veryprosto.homefinance.db.dao.CategoryDAO;
 import ru.veryprosto.homefinance.db.dao.OperationDAO;
-import ru.veryprosto.homefinance.db.dao.WalletDAO;
+import ru.veryprosto.homefinance.db.dao.AccountDAO;
 import ru.veryprosto.homefinance.db.model.Category;
 import ru.veryprosto.homefinance.db.model.Operation;
-import ru.veryprosto.homefinance.db.model.Wallet;
+import ru.veryprosto.homefinance.db.model.Account;
 
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
@@ -26,10 +26,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "homefinance.db";
 
     //с каждым увеличением версии, при нахождении в устройстве БД с предыдущей версией будет выполнен метод onUpgrade();
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     //ссылки на DAO соответствующие сущностям, хранимым в БД
-    private WalletDAO walletDAO = null;
+    private AccountDAO accountDAO = null;
     private OperationDAO operationDAO = null;
     private CategoryDAO categoryDAO = null;
 
@@ -41,7 +41,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
         try {
-            TableUtils.createTable(connectionSource, Wallet.class);
+            TableUtils.createTable(connectionSource, Account.class);
             TableUtils.createTable(connectionSource, Operation.class);
             TableUtils.createTable(connectionSource, Category.class);
         } catch (SQLException e) {
@@ -55,7 +55,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                           int newVer) {
         try {
             //Так делают ленивые, гораздо предпочтительнее не удаляя БД аккуратно вносить изменения
-            TableUtils.dropTable(connectionSource, Wallet.class, true);
+            TableUtils.dropTable(connectionSource, Account.class, true);
             TableUtils.dropTable(connectionSource, Operation.class, true);
             TableUtils.dropTable(connectionSource, Category.class, true);
             onCreate(db, connectionSource);
@@ -65,16 +65,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
     }
 
-    //синглтон для WalletDAO
-    public WalletDAO getWalletDAO() {
-        if (walletDAO == null) {
+    //синглтон для AccountDAO
+    public AccountDAO getAccountDAO() {
+        if (accountDAO == null) {
             try {
-                walletDAO = new WalletDAO(getConnectionSource(), Wallet.class);
+                accountDAO = new AccountDAO(getConnectionSource(), Account.class);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
-        return walletDAO;
+        return accountDAO;
     }
 
     //синглтон для OperationDAO
@@ -89,8 +89,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return operationDAO;
     }
 
-    //синглтон для OperationCategoryDAO
-    public CategoryDAO getOperationCategoryDAO() {
+    //синглтон для CategoryDAO
+    public CategoryDAO getCategoryDAO() {
         if (categoryDAO == null) {
             try {
                 categoryDAO = new CategoryDAO(getConnectionSource(), Category.class);
@@ -105,7 +105,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void close() {
         super.close();
-        walletDAO = null;
+        accountDAO = null;
         operationDAO = null;
         categoryDAO = null;
     }

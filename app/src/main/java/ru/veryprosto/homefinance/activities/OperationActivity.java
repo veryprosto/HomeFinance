@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.SimpleExpandableListAdapter;
 
 import androidx.annotation.RequiresApi;
@@ -17,10 +18,8 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,8 @@ import java.util.stream.Collectors;
 import ru.veryprosto.homefinance.MainController;
 import ru.veryprosto.homefinance.R;
 import ru.veryprosto.homefinance.db.model.Operation;
+import ru.veryprosto.homefinance.db.model.OperationType;
+import ru.veryprosto.homefinance.util.DateRange;
 import ru.veryprosto.homefinance.util.Util;
 
 public class OperationActivity extends AppCompatActivity {
@@ -41,7 +42,9 @@ public class OperationActivity extends AppCompatActivity {
     private Date endPeriod;
     private boolean isOutput;
     private boolean isInput;
+    private boolean isTransfer;
     private List<Operation> operations;
+    private DateRange dateRange;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
@@ -58,14 +61,11 @@ public class OperationActivity extends AppCompatActivity {
     private void init() {
         mainController = MainController.getInstance();
 
-        Calendar cal = new GregorianCalendar();
-        cal.set(Calendar.DATE, cal.getActualMinimum(Calendar.DATE));
-        startPeriod = cal.getTime();
-        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
-        endPeriod = cal.getTime();
+        dateRange = new DateRange();
 
         isOutput = true;
         isInput = true;
+        isTransfer = true;
 
         initPickDateButton();
         initAddOperationButtons();
@@ -77,7 +77,12 @@ public class OperationActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void fillOperationElv() {
-        operations = mainController.getOperationByDatesAndTypes(startPeriod, endPeriod, isOutput, isInput);
+        List<OperationType> operationTypes = new ArrayList<>();
+        if (isOutput) operationTypes.add(OperationType.OUTPUT);
+        if (isInput) operationTypes.add(OperationType.INPUT);
+        if (isTransfer) operationTypes.add(OperationType.TRANSFER);
+
+        operations = mainController.getOperationByDatesAndTypes(dateRange, operationTypes);
 
         List<Map<String, String>> parentData = new ArrayList<>();
         List<List<Map<String, String>>> childData = new ArrayList<>();
@@ -104,7 +109,7 @@ public class OperationActivity extends AppCompatActivity {
 
             for (Operation operation : value) {
                 tempMap = new HashMap<>();
-                tempMap.put("operation", operation.getCategory() + " " + operation.getSumm().toString());
+                tempMap.put("operation", operation.getAccount() + " " + operation.getCategory() + " " + operation.getSumm().toString());
                 childDataItem.add(tempMap);
             }
 
@@ -156,28 +161,37 @@ public class OperationActivity extends AppCompatActivity {
                     fillOperationElv();
                 });
 
-        pickDateButton.setText(Util.dateToString(startPeriod) + "\n" + Util.dateToString(endPeriod));
+        pickDateButton.setText(dateRange.getStringStart() + "\n" + dateRange.getStringEnd());
     }
 
     private void initAddOperationButtons() {
-        Button addInputOperationButton = findViewById(R.id.addInputOperationBtn);
+        ImageButton addInputOperationButton = findViewById(R.id.addInputOperationBtn);
+
         addInputOperationButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, OperationEditActivity.class);
-            intent.putExtra("isOutputOperation", false);
+            intent.putExtra("operationType", OperationType.INPUT);
             startActivity(intent);
         });
 
-        Button addOutputOperationButton = findViewById(R.id.addOutputOperationBtn);
+        ImageButton addOutputOperationButton = findViewById(R.id.addOutputOperationBtn);
 
         addOutputOperationButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, OperationEditActivity.class);
-            intent.putExtra("isOutputOperation", true);
+            intent.putExtra("operationType", OperationType.OUTPUT);
+            startActivity(intent);
+        });
+
+        ImageButton addTransferOperationButton = findViewById(R.id.addTransferOperationBtn);
+
+        addTransferOperationButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, OperationEditActivity.class);
+            intent.putExtra("operationType", OperationType.TRANSFER);
             startActivity(intent);
         });
     }
 
     private void initReturnMenuButton() {
-        Button returnMenuBtn = findViewById(R.id.returnMenuBtn);
+        ImageButton returnMenuBtn = findViewById(R.id.returnMenuBtn);
         returnMenuBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);

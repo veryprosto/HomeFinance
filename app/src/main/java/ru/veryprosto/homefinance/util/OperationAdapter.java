@@ -42,8 +42,8 @@ public class OperationAdapter extends ArrayAdapter<Operation> {
 
         final Operation operation = operationList.get(position);
 
-        viewHolder.nameView.setText(operation.getName());
-        viewHolder.summView.setText(operation.toString());
+        viewHolder.nameView.setText(operation.getCategory().getName());
+        viewHolder.summView.setText(operation.getSumm().toString());
 
         viewHolder.removeButton.setOnClickListener(v -> {
             mainController.removeOperation(operation);

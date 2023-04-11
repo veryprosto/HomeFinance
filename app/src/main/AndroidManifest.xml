@@ -43,7 +43,7 @@
         </activity>
 
         <activity
-            android:name=".activities.WalletActivity"
+            android:name=".activities.AccountActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

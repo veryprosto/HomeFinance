@@ -10,36 +10,34 @@ import ru.veryprosto.homefinance.util.Util;
 
 @DatabaseTable(tableName = "operation")
 public class Operation {
+
     @DatabaseField(generatedId = true)
     private Integer id;
-    @DatabaseField(canBeNull = true)
-    private String name;
 
-    @DatabaseField(foreign = true, canBeNull = false, foreignAutoRefresh = true, columnName = "wallet_id")
-    private Wallet wallet;
+    @DatabaseField()
+    private String description;
+
+    @DatabaseField(foreign = true, canBeNull = false, foreignAutoRefresh = true, columnName = "account_id")
+    private Account account;
 
     @DatabaseField(foreign = true, canBeNull = false, foreignAutoRefresh = true, columnName = "category_id")
     private Category category;
 
-    @DatabaseField()
+    @DatabaseField
     private Date date;
 
     @DatabaseField
     private BigDecimal summ;
 
-    @DatabaseField(canBeNull = false)
-    private boolean isOutput;
-
     public Operation() {
     }
 
-    public Operation(String name, Wallet wallet, Category category, Date date, BigDecimal summ, boolean isOutput) {
-        this.name = name;
-        this.wallet = wallet;
+    public Operation(String description, Account account, Category category, Date date, BigDecimal summ) {
+        this.description = description;
+        this.account = account;
         this.category = category;
         this.date = date;
         this.summ = summ;
-        this.isOutput = isOutput;
     }
 
     public Integer getId() {
@@ -50,20 +48,20 @@ public class Operation {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public Wallet getWallet() {
-        return wallet;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setWallet(Wallet wallet) {
-        this.wallet = wallet;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public Category getCategory() {
@@ -88,22 +86,5 @@ public class Operation {
 
     public void setSumm(BigDecimal summ) {
         this.summ = summ;
-    }
-
-    public boolean isOutput() {
-        return isOutput;
-    }
-
-    public void setOutput(boolean output) {
-        isOutput = output;
-    }
-
-    @Override
-    public String toString() {
-        return wallet +
-                ", " + category +
-                ", " + Util.dateToString(date) +
-                ", " + summ +
-                ", " + isOutput;
     }
 }

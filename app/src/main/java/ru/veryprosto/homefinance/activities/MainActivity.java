@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button balanceButton = findViewById(R.id.balanceBtn);
         Button operationButton = findViewById(R.id.operationBtn);
-        Button walletButton = findViewById(R.id.walletBtn);
+        Button accountButton = findViewById(R.id.accountBtn);
 
         balanceButton.setOnClickListener(v -> {
             Intent intent = new Intent();
@@ -32,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        walletButton.setOnClickListener(v -> {
+        accountButton.setOnClickListener(v -> {
             Intent intent = new Intent();
-            intent.setClass(MainActivity.this, WalletActivity.class);
+            intent.setClass(MainActivity.this, AccountActivity.class);
             startActivity(intent);
         });
     }

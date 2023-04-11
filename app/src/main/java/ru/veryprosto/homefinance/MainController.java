@@ -4,30 +4,35 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import ru.veryprosto.homefinance.db.HelperFactory;
 import ru.veryprosto.homefinance.db.dao.CategoryDAO;
 import ru.veryprosto.homefinance.db.dao.OperationDAO;
-import ru.veryprosto.homefinance.db.dao.WalletDAO;
+import ru.veryprosto.homefinance.db.dao.AccountDAO;
+import ru.veryprosto.homefinance.db.model.AccountType;
 import ru.veryprosto.homefinance.db.model.Category;
 import ru.veryprosto.homefinance.db.model.Operation;
-import ru.veryprosto.homefinance.db.model.Wallet;
+import ru.veryprosto.homefinance.db.model.Account;
+import ru.veryprosto.homefinance.db.model.OperationType;
+import ru.veryprosto.homefinance.util.DateRange;
 
 public class MainController {
 
     private static MainController instance;
 
-    private final WalletDAO walletDAO = HelperFactory.getHelper().getWalletDAO();
+    private final AccountDAO accountDAO = HelperFactory.getHelper().getAccountDAO();
     private final OperationDAO operationDAO = HelperFactory.getHelper().getOperationDAO();
-    private final CategoryDAO categoryDAO = HelperFactory.getHelper().getOperationCategoryDAO();
+    private final CategoryDAO categoryDAO = HelperFactory.getHelper().getCategoryDAO();
 
     private MainController() {
     }
@@ -40,9 +45,9 @@ public class MainController {
     }
 
     //------------ Create operations start ------------
-    public void createWallet(Wallet wallet) {
+    public void createAccount(Account account) {
         try {
-            walletDAO.create(wallet);
+            accountDAO.create(account);
         } catch (SQLException e) {
             throw new RuntimeException(e);
             // TODO: Обработать исключение, в т.ч. если кошелек с таким именем существует
@@ -51,7 +56,33 @@ public class MainController {
 
     public void createOperation(Operation operation) {
         try {
+            OperationType type = operation.getCategory().getType();
+            if (type == OperationType.OUTPUT) {
+                operation.setSumm(operation.getSumm().multiply(new BigDecimal(-1)));
+            }
             operationDAO.create(operation);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+            // TODO: Обработать исключение
+        }
+    }
+
+    public void createTransferOperation(Account from, Account to, BigDecimal summ, Date date) {
+        try {
+            Category transferCategory = categoryDAO.queryBuilder().where().eq("name", "transfer").queryForFirst();
+            if (transferCategory == null) {
+                categoryDAO.create(new Category("transfer", OperationType.TRANSFER));
+                transferCategory = categoryDAO.queryBuilder().where().eq("name", "transfer").queryForFirst();
+            }
+
+
+            Operation operationFrom = new Operation("Перевод на " + to.getName(), from, transferCategory, date, summ.multiply(new BigDecimal(-1)));
+            Operation operationTo = new Operation("Перевод с " + from.getName(), to, transferCategory, date, summ);
+
+            Collection<Operation> transferOperations = Arrays.asList(operationFrom, operationTo);
+
+
+            operationDAO.create(transferOperations);//todo проверить транзакция ли это?
         } catch (SQLException e) {
             throw new RuntimeException(e);
             // TODO: Обработать исключение
@@ -69,52 +100,32 @@ public class MainController {
     //------------ Create operations end -----------
 
     //------------ Get operations start ------------
-    public List<Wallet> getWallets() {
-        List<Wallet> walletList;
+    public List<Account> getAccountsByTypes(AccountType... types) {
         try {
-            walletList = walletDAO.queryForAll();
+            return accountDAO.queryBuilder().where().in("type", types).query();
         } catch (SQLException e) {
-            throw new RuntimeException(e); // TODO: Обработать исключение
+            throw new RuntimeException(e); //TODO: Обработать исключение
         }
-        return walletList;
     }
 
-    public List<Category> getCategoriesByType(Boolean isOutput) {
-        List<Category> categories;
+    public List<Category> getCategoriesByTypes(OperationType... types) {
         try {
-            categories = categoryDAO.queryBuilder().where().eq("isOutput", isOutput).query();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return categories;
-    }
-
-    public Category getCategoryByName(String name) {
-        try {
-            return categoryDAO.queryBuilder().where().eq("name", name).queryForFirst();
+            return categoryDAO.queryBuilder().where().in("type", types).query();
         } catch (SQLException e) {
             throw new RuntimeException(e); //TODO: Обработать исключение
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public List<Operation> getOperationByDatesAndTypes(Date start, Date end, boolean isOutput, boolean isInput) { //todo рефактор - создать утильный класс DateRange
-        if (!isOutput && !isInput) {
-            return new ArrayList<>();
-        }
-
-        if (start == null) start = new GregorianCalendar(1900, 0, 1).getTime();
-        if (end == null) end = new GregorianCalendar(5000, 0, 1).getTime();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(start);
-        calendar.add(Calendar.DATE, -1);
-        start = calendar.getTime();
+    public List<Operation> getOperationByDatesAndTypes(DateRange dateRange, List<OperationType> types) {
+        QueryBuilder<Operation, Integer> operationQB = operationDAO.queryBuilder();
+        QueryBuilder<Category, Integer> categoryQB = categoryDAO.queryBuilder();
 
         try {
-            Where<Operation, Integer> where = operationDAO.queryBuilder().where();
+            categoryQB.where().in("type", types);
 
-            return where.and(where.between("date", start, end), where.or(where.eq("isOutput", isOutput), where.eq("isOutput", !isInput))).query();
+            //return operationQB.join(categoryQB).where().between("date", dateRange.getStartIncudeStartDate(), dateRange.getEnd()).query();
+            return operationQB.join(categoryQB).query();
 
         } catch (SQLException e) {
             throw new RuntimeException(e); //TODO: Обработать исключение
@@ -123,9 +134,9 @@ public class MainController {
     //------------ Get operations end ------------
 
     //------------ Remove operations start ------------
-    public void removeWallet(Wallet wallet) {
+    public void removeAccount(Account account) {
         try {
-            walletDAO.delete(wallet);
+            accountDAO.delete(account);
         } catch (SQLException e) {
             throw new RuntimeException(e);//TODO: Обработать исключение
         }

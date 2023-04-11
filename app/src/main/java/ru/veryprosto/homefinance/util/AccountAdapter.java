@@ -16,17 +16,17 @@ import java.util.List;
 
 import ru.veryprosto.homefinance.MainController;
 import ru.veryprosto.homefinance.R;
-import ru.veryprosto.homefinance.db.model.Wallet;
+import ru.veryprosto.homefinance.db.model.Account;
 
-public class WalletAdapter extends ArrayAdapter<Wallet> {
+public class AccountAdapter extends ArrayAdapter<Account> {
     private LayoutInflater inflater;
     private int layout;
-    private List<Wallet> walletList;
+    private List<Account> accountList;
     private MainController mainController;
 
-    public WalletAdapter(Context context, int resource, List<Wallet> walletList) {
-        super(context, resource, walletList);
-        this.walletList = walletList;
+    public AccountAdapter(Context context, int resource, List<Account> accountList) {
+        super(context, resource, accountList);
+        this.accountList = accountList;
         this.layout = resource;
         this.inflater = LayoutInflater.from(context);
     }
@@ -46,14 +46,14 @@ public class WalletAdapter extends ArrayAdapter<Wallet> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        final Wallet wallet = walletList.get(position);
+        final Account account = accountList.get(position);
 
-        viewHolder.nameView.setText(wallet.getName());
-        viewHolder.summView.setText(wallet.getTotal().toString());
+        viewHolder.nameView.setText(account.getName());
+        viewHolder.summView.setText(account.getTotal().toString());
 
         viewHolder.removeButton.setOnClickListener(v -> {
-            mainController.removeWallet(wallet);
-            walletList.remove(wallet);
+            mainController.removeAccount(account);
+            accountList.remove(account);
             notifyDataSetChanged(); //обновляет отображение.
         });
 

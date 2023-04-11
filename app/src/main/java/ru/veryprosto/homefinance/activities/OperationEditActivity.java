@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -22,25 +22,29 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import ru.veryprosto.homefinance.MainController;
 import ru.veryprosto.homefinance.R;
+import ru.veryprosto.homefinance.db.model.AccountType;
 import ru.veryprosto.homefinance.db.model.Category;
 import ru.veryprosto.homefinance.db.model.Operation;
-import ru.veryprosto.homefinance.db.model.Wallet;
+import ru.veryprosto.homefinance.db.model.Account;
+import ru.veryprosto.homefinance.db.model.OperationType;
 import ru.veryprosto.homefinance.util.Util;
 
 
 public class OperationEditActivity extends AppCompatActivity {
 
     private MainController mainController;
-    private Button dateButton;
-    private Spinner walletSpinner;
+    private Spinner accountSpinner;
+    private Spinner accountToSpinner;
     private Spinner categorySpinner;
-    private EditText nameInput;
+    private EditText descriptionInput;
     private EditText summInput;
     private ArrayAdapter<Category> categoryArrayAdapter;
-    private Boolean isOutputOperation;
+    private OperationType operationType;
+    private TextView dateTextView;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -55,64 +59,95 @@ public class OperationEditActivity extends AppCompatActivity {
     private void init() {
         mainController = MainController.getInstance();
 
-        nameInput = findViewById(R.id.input_name);
+        descriptionInput = findViewById(R.id.input_description);
         summInput = findViewById(R.id.input_summ);
         TextView operationEditTextView = findViewById(R.id.operationEditTextView);
 
         Bundle arguments = getIntent().getExtras();
-        isOutputOperation = (Boolean) arguments.get("isOutputOperation");
-        String title = isOutputOperation ? "Расходная операция" : "Доходная операция";
+        operationType = (OperationType) arguments.get("operationType");
+
+        String title = operationType.getTitle();
         operationEditTextView.setText(title);
 
-        initWalletSpinner();
-        initCategorySpinner();
-        initDateButton();
+        initAccountSpinner();
+        initAccountToSpinner();
+        initCategorySpinner(operationType);
+        initDateButtonAndTextView();
         initAddCategoryButton();
-        initSaveOperationButton();
+        initSaveButton();
+        initCancelButton();
+
+        if (operationType == OperationType.TRANSFER) {
+            categorySpinner.setVisibility(View.INVISIBLE);
+            accountToSpinner.setVisibility(View.VISIBLE);
+        } else {
+            categorySpinner.setVisibility(View.VISIBLE);
+            accountToSpinner.setVisibility(View.INVISIBLE);
+        }
     }
 
-    private void initSaveOperationButton() {
-        Button saveOperationButton = findViewById(R.id.saveOperationBtn);
+    private void initSaveButton() {
+        ImageButton saveOperationButton = findViewById(R.id.saveOperationBtn);
 
         saveOperationButton.setOnClickListener(v -> {
-            String operationName = nameInput.getText().toString();
-            Wallet wallet = (Wallet) walletSpinner.getItemAtPosition(walletSpinner.getSelectedItemPosition());
+            String description = descriptionInput.getText().toString();
+            Account account = (Account) accountSpinner.getItemAtPosition(accountSpinner.getSelectedItemPosition());
+            Account accountTo = (Account) accountToSpinner.getItemAtPosition(accountToSpinner.getSelectedItemPosition());
             Category category = (Category) categorySpinner.getItemAtPosition(categorySpinner.getSelectedItemPosition());
-            BigDecimal outInKoef = isOutputOperation ? new BigDecimal(-1) : new BigDecimal(1);
-            BigDecimal operationSumm = new BigDecimal(summInput.getText().toString()).multiply(outInKoef); // todo добавить валидацию ввода
-            Date operationDate = Util.stringToDate((String) dateButton.getText());
+            BigDecimal summ = new BigDecimal(summInput.getText().toString()); //todo добавить валидацию ввода
+            Date operationDate = Util.stringToDate((String) dateTextView.getText());
 
-            Operation operation = new Operation(operationName, wallet, category, operationDate, operationSumm, isOutputOperation);
-            mainController.createOperation(operation);
+
+            if (operationType==OperationType.TRANSFER){
+                mainController.createTransferOperation(account, accountTo, summ, operationDate);
+            } else {
+                Operation operation = new Operation(description, account, category, operationDate, summ);
+                mainController.createOperation(operation);
+            }
+
 
             returnAndRefreshPreviousActivity();
         });
     }
 
-    private void initCategorySpinner() {
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void initCategorySpinner(OperationType type) {
         categorySpinner = findViewById(R.id.categorySpinner);
 
-        List<Category> categories = mainController.getCategoriesByType(isOutputOperation);
+        List<Category> categories = mainController.getCategoriesByTypes(type);
+
         categoryArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(categoryArrayAdapter);
     }
 
-    private void initWalletSpinner() {
-        walletSpinner = findViewById(R.id.walletSpinner);
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void initAccountSpinner() {
+        accountSpinner = findViewById(R.id.accountSpinner);
 
-        List<Wallet> wallets = mainController.getWallets();
-        ArrayAdapter<Wallet> walletArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, wallets);
-        walletArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        walletSpinner.setAdapter(walletArrayAdapter);
+        List<Account> accounts = mainController.getAccountsByTypes(AccountType.DEBITCARD);
+        ArrayAdapter<Account> accountArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, accounts);
+        accountArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        accountSpinner.setAdapter(accountArrayAdapter);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void initAccountToSpinner() {
+        accountToSpinner = findViewById(R.id.accountToSpinner);
+
+        List<Account> accounts = mainController.getAccountsByTypes(AccountType.DEBITCARD);
+        ArrayAdapter<Account> accountArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, accounts);
+        accountArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        accountToSpinner.setAdapter(accountArrayAdapter);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initDateButton() {
-        dateButton = findViewById(R.id.pick_date_button);
+    private void initDateButtonAndTextView() {
+        ImageButton dateButton = findViewById(R.id.pick_date_button);
+        dateTextView = findViewById(R.id.dateTextView);
 
         AtomicReference<Date> operationDate = new AtomicReference<>(new Date());
-        dateButton.setText(Util.dateToString(operationDate.get()));
+        dateTextView.setText(Util.dateToString(operationDate.get()));
 
         MaterialDatePicker.Builder<Long> materialDateBuilder = MaterialDatePicker.Builder.datePicker();
         materialDateBuilder.setTitleText("SELECT A DATE" + "\u221E\t");
@@ -126,12 +161,13 @@ public class OperationEditActivity extends AppCompatActivity {
                 (MaterialPickerOnPositiveButtonClickListener<? super Long>) selection -> {
 
                     operationDate.set(new Date((Long) selection));
-                    dateButton.setText((CharSequence) Util.dateToString(operationDate.get()));
+                    dateTextView.setText((CharSequence) Util.dateToString(operationDate.get()));
                 });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void initAddCategoryButton() {
-        Button addCategoryButton = findViewById(R.id.addCategoryBtn);
+        ImageButton addCategoryButton = findViewById(R.id.addCategoryBtn);
 
         addCategoryButton.setOnClickListener(v -> {
             LayoutInflater li = LayoutInflater.from(this);
@@ -148,9 +184,9 @@ public class OperationEditActivity extends AppCompatActivity {
                     .setPositiveButton("OK",
                             (dialog, id) -> {
                                 String userText = userInput.getText().toString();
-                                Category newCategory = new Category(userText, isOutputOperation);
+                                Category newCategory = new Category(userText, operationType);
                                 mainController.createCategory(newCategory);
-                                initCategorySpinner();
+                                initCategorySpinner(operationType);
                             })
                     .setNegativeButton("Отмена",
                             (dialog, id) -> dialog.cancel())
@@ -159,10 +195,15 @@ public class OperationEditActivity extends AppCompatActivity {
         });
     }
 
-    private void returnAndRefreshPreviousActivity(){
+    private void returnAndRefreshPreviousActivity() {
         Intent intent = new Intent();
         intent.setClass(OperationEditActivity.this, OperationActivity.class);
         startActivity(intent);
+    }
+
+    private void initCancelButton() {
+        ImageButton cancelButton = findViewById(R.id.cancelBtn);
+        cancelButton.setOnClickListener(v -> returnAndRefreshPreviousActivity());
     }
 
 }

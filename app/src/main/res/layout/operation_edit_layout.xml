@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -17,80 +18,135 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/input_name"
+
+
+    <TextView
+        android:id="@+id/dateTextView"
         style="@style/Widget.AppCompat.EditText"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginTop="100dp"
-        android:background="#FBD102"
-        android:hint="Описание операции"
+        android:ellipsize="start"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:background="@drawable/edit_text_style"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/pick_date_button"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="20dp"
-        android:background="#FBD102"
-        android:text="Select Date"
-        android:textAlignment="textStart"
-        android:textSize="18sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_name" />
+        app:layout_constraintTop_toTopOf="parent"
+         />
 
     <Spinner
-        android:id="@+id/walletSpinner"
+        android:id="@+id/accountSpinner"
+        style="@style/Widget.AppCompat.EditText"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:background="#FBD102"
+        android:background="@drawable/edit_text_style"
+        android:ellipsize="start"
+        android:gravity="center"
         android:hint="Кошелёк"
+        android:textAlignment="center"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pick_date_button" />
 
     <Spinner
-        android:id="@+id/categorySpinner"
+        android:id="@+id/accountToSpinner"
+        style="@style/Widget.AppCompat.EditText"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:background="#FBD102"
-        android:hint="Категория"
+        android:background="@drawable/edit_text_style"
+        android:ellipsize="start"
+        android:gravity="center"
+        android:hint="Кошелёк"
+        android:textAlignment="center"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/walletSpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/accountSpinner" />
+
+    <Spinner
+        android:id="@+id/categorySpinner"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/edit_text_style"
+        android:ellipsize="start"
+        android:gravity="center"
+        android:hint="Кошелёк"
+        android:textAlignment="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accountSpinner" />
 
     <EditText
         android:id="@+id/input_summ"
+        style="@style/Widget.AppCompat.EditText"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:background="#FBD102"
+        android:ellipsize="start"
+        android:gravity="center"
+        android:inputType="numberSigned|numberDecimal"
         android:hint="Сумма"
-        android:inputType="number"
+        android:background="@drawable/edit_text_style"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/categorySpinner" />
 
-    <Button
-        android:id="@+id/saveOperationBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Сохранить"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_summ"
-        app:layout_constraintVertical_bias="0.5" />
-
-    <Button
-        android:id="@+id/addCategoryBtn"
-        android:layout_width="40dp"
+    <EditText
+        android:id="@+id/input_description"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="250dp"
         android:layout_height="50dp"
-        android:layout_marginStart="30dp"
-        android:text="+"
+        android:layout_marginTop="20dp"
+        android:ellipsize="start"
+        android:gravity="center"
+        android:hint="Примечание"
+        android:background="@drawable/edit_text_style"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_summ"
+         />
+
+    <ImageButton
+        android:id="@+id/saveOperationBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="@+id/input_description"
+        app:layout_constraintTop_toBottomOf="@+id/input_description"
+        app:srcCompat="@drawable/save" />
+
+    <ImageButton
+        android:id="@+id/cancelBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="100dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintStart_toStartOf="@+id/input_description"
+        app:layout_constraintTop_toBottomOf="@+id/input_description"
+        app:srcCompat="@drawable/cross" />
+
+    <ImageButton
+        android:id="@+id/addCategoryBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="2dp"
+        android:background="?android:attr/selectableItemBackground"
         app:layout_constraintStart_toEndOf="@+id/categorySpinner"
-        app:layout_constraintTop_toTopOf="@id/categorySpinner" />
+        app:layout_constraintTop_toTopOf="@id/categorySpinner"
+        app:srcCompat="@drawable/plus" />
+
+    <ImageButton
+        android:id="@+id/pick_date_button"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="2dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintStart_toEndOf="@+id/dateTextView"
+        app:layout_constraintTop_toTopOf="@id/dateTextView"
+        app:srcCompat="@drawable/calendar" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

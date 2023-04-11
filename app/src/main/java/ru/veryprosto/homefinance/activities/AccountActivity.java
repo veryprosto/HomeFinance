@@ -12,31 +12,33 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ru.veryprosto.homefinance.MainController;
 import ru.veryprosto.homefinance.R;
-import ru.veryprosto.homefinance.db.model.Wallet;
-import ru.veryprosto.homefinance.util.WalletAdapter;
+import ru.veryprosto.homefinance.db.model.Account;
+import ru.veryprosto.homefinance.db.model.AccountType;
+import ru.veryprosto.homefinance.db.model.OperationType;
+import ru.veryprosto.homefinance.util.AccountAdapter;
 
-public class WalletActivity extends AppCompatActivity {
+public class AccountActivity extends AppCompatActivity {
 
     private MainController mainController;
-    private Button addWalletButton;
-    private ListView walletListView;
-    private WalletAdapter adapter;
+    private Button addAccountButton;
+    private ListView accountListView;
+    private AccountAdapter adapter;
 
     private void init(){
         mainController = MainController.getInstance();
-        addWalletButton = findViewById(R.id.addWalletBtn);
-        walletListView = findViewById(R.id.walletList);
+        addAccountButton = findViewById(R.id.addAccountBtn);
+        accountListView = findViewById(R.id.accountList);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.wallet_layout);
+        setContentView(R.layout.account_layout);
 
         init();
-        fillWalletListView();
+        fillAccountListView();
 
-        addWalletButton.setOnClickListener(v -> {
+        addAccountButton.setOnClickListener(v -> {
             LayoutInflater li = LayoutInflater.from(this);
             View promptsView = li.inflate(R.layout.prompt, null);
 
@@ -52,10 +54,10 @@ public class WalletActivity extends AppCompatActivity {
                             (dialog, id) -> {
                                 String userText = userInput.getText().toString();
 
-                                Wallet wallet = new Wallet(userText);
-                                mainController.createWallet(wallet);
+                                Account account = new Account(userText, AccountType.DEBITCARD);
+                                mainController.createAccount(account);
 
-                                fillWalletListView();
+                                fillAccountListView();
                             })
                     .setNegativeButton("Отмена",
                             (dialog, id) -> dialog.cancel())
@@ -64,9 +66,9 @@ public class WalletActivity extends AppCompatActivity {
         });
     }
 
-    public void fillWalletListView(){
-        adapter = new WalletAdapter(this, R.layout.list_item, mainController.getWallets());
-        walletListView.setAdapter(adapter);
+    public void fillAccountListView(){
+        adapter = new AccountAdapter(this, R.layout.list_item, mainController.getAccountsByTypes(AccountType.DEBITCARD));
+        accountListView.setAdapter(adapter);
     }
 
 }

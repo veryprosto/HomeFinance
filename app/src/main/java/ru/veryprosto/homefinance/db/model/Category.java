@@ -3,7 +3,7 @@ package ru.veryprosto.homefinance.db.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "category")
+@DatabaseTable
 public class Category {
 
     @DatabaseField(generatedId = true)
@@ -13,14 +13,14 @@ public class Category {
     private String name;
 
     @DatabaseField(canBeNull = false)
-    private boolean isOutput;
+    private OperationType type;
 
     public Category() {
     }
 
-    public Category(String name, boolean isOutput) {
+    public Category(String name, OperationType type) {
         this.name = name;
-        this.isOutput = isOutput;
+        this.type = type;
     }
 
     public String getName() {
@@ -35,16 +35,12 @@ public class Category {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public OperationType getType() {
+        return type;
     }
 
-    public boolean isOutput() {
-        return isOutput;
-    }
-
-    public void setOutput(boolean output) {
-        isOutput = output;
+    public void setType(OperationType type) {
+        this.type = type;
     }
 
     @Override
