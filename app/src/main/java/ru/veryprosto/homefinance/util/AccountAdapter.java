@@ -2,6 +2,7 @@ package ru.veryprosto.homefinance.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,15 +15,18 @@ import androidx.annotation.RequiresApi;
 
 import java.util.List;
 
-import ru.veryprosto.homefinance.MainController;
+import ru.veryprosto.homefinance.activities.AccountActivity;
+import ru.veryprosto.homefinance.activities.AccountEditActivity;
+import ru.veryprosto.homefinance.controller.AccountController;
+import ru.veryprosto.homefinance.controller.CategoryController;
 import ru.veryprosto.homefinance.R;
-import ru.veryprosto.homefinance.db.model.Account;
+import ru.veryprosto.homefinance.model.Account;
 
 public class AccountAdapter extends ArrayAdapter<Account> {
     private LayoutInflater inflater;
     private int layout;
     private List<Account> accountList;
-    private MainController mainController;
+    private AccountController accountController;
 
     public AccountAdapter(Context context, int resource, List<Account> accountList) {
         super(context, resource, accountList);
@@ -34,7 +38,7 @@ public class AccountAdapter extends ArrayAdapter<Account> {
     @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.N)
     public View getView(int position, View convertView, ViewGroup parent) {
-        mainController = MainController.getInstance();
+        accountController = AccountController.getInstance();
 
         final ViewHolder viewHolder;
 
@@ -52,13 +56,16 @@ public class AccountAdapter extends ArrayAdapter<Account> {
         viewHolder.summView.setText(account.getTotal().toString());
 
         viewHolder.removeButton.setOnClickListener(v -> {
-            mainController.removeAccount(account);
+            accountController.removeAccount(account);
             accountList.remove(account);
             notifyDataSetChanged(); //обновляет отображение.
         });
 
         viewHolder.editButton.setOnClickListener(v -> {
-
+            Context context = this.getContext();
+            Intent intent = new Intent(this.getContext(), AccountEditActivity.class);
+            intent.putExtra("oldAccountId", account.getId());
+            context.startActivity(intent);
         });
 
         return convertView;

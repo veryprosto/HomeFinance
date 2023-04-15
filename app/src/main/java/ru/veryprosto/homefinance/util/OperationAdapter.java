@@ -1,5 +1,6 @@
 package ru.veryprosto.homefinance.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,15 +11,16 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import ru.veryprosto.homefinance.MainController;
+import ru.veryprosto.homefinance.controller.CategoryController;
 import ru.veryprosto.homefinance.R;
-import ru.veryprosto.homefinance.db.model.Operation;
+import ru.veryprosto.homefinance.controller.OperationController;
+import ru.veryprosto.homefinance.model.Operation;
 
 public class OperationAdapter extends ArrayAdapter<Operation> {
     private LayoutInflater inflater;
     private int layout;
     private List<Operation> operationList;
-    private MainController mainController;
+    private OperationController operationController;
 
     public OperationAdapter(Context context, int resource, List<Operation> operationList) {
         super(context, resource, operationList);
@@ -27,8 +29,9 @@ public class OperationAdapter extends ArrayAdapter<Operation> {
         this.inflater = LayoutInflater.from(context);
     }
 
+    @SuppressLint("SetTextI18n")
     public View getView(int position, View convertView, ViewGroup parent) {
-        mainController = MainController.getInstance();
+        operationController = OperationController.getInstance();
 
         final ViewHolder viewHolder;
 
@@ -46,7 +49,7 @@ public class OperationAdapter extends ArrayAdapter<Operation> {
         viewHolder.summView.setText(operation.getSumm().toString());
 
         viewHolder.removeButton.setOnClickListener(v -> {
-            mainController.removeOperation(operation);
+            operationController.removeOperation(operation);
             operationList.remove(operation);
             notifyDataSetChanged();
         });

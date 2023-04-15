@@ -1,4 +1,4 @@
-package ru.veryprosto.homefinance.db.model;
+package ru.veryprosto.homefinance.model;
 
 public enum AccountType {
     DEBITCARD("дебетовая карта"),

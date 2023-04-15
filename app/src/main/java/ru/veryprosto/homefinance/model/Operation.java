@@ -1,12 +1,10 @@
-package ru.veryprosto.homefinance.db.model;
+package ru.veryprosto.homefinance.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
-import ru.veryprosto.homefinance.util.Util;
 
 @DatabaseTable(tableName = "operation")
 public class Operation {

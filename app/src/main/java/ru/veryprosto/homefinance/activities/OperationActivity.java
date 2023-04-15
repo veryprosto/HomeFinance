@@ -6,37 +6,40 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
-import android.widget.SimpleExpandableListAdapter;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import ru.veryprosto.homefinance.MainController;
+import ru.veryprosto.homefinance.DTO.DTO;
 import ru.veryprosto.homefinance.R;
-import ru.veryprosto.homefinance.db.model.Operation;
-import ru.veryprosto.homefinance.db.model.OperationType;
+import ru.veryprosto.homefinance.controller.OperationController;
+import ru.veryprosto.homefinance.model.Account;
+import ru.veryprosto.homefinance.model.Operation;
+import ru.veryprosto.homefinance.model.OperationType;
+import ru.veryprosto.homefinance.temp.OperationDTOAdapter;
 import ru.veryprosto.homefinance.util.DateRange;
 import ru.veryprosto.homefinance.util.Util;
 
 public class OperationActivity extends AppCompatActivity {
-    private MainController mainController;
-    private ExpandableListView operationElv;
+    private OperationController operationController;
+    private List<DTO> states;
+    private RecyclerView operationRecyclerView;
 
     private Date startPeriod;
     private Date endPeriod;
@@ -45,6 +48,7 @@ public class OperationActivity extends AppCompatActivity {
     private boolean isTransfer;
     private List<Operation> operations;
     private DateRange dateRange;
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
@@ -55,11 +59,10 @@ public class OperationActivity extends AppCompatActivity {
         init();
     }
 
-
     @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void init() {
-        mainController = MainController.getInstance();
+        operationController = OperationController.getInstance();
 
         dateRange = new DateRange();
 
@@ -71,69 +74,59 @@ public class OperationActivity extends AppCompatActivity {
         initAddOperationButtons();
         initReturnMenuButton();
         initCheckBoxes();
-        fillOperationElv();
+        fillOperationRecyclerView();
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void fillOperationElv() {
+    private void fillOperationRecyclerView() {
+        states = new ArrayList<>();
+
         List<OperationType> operationTypes = new ArrayList<>();
+
         if (isOutput) operationTypes.add(OperationType.OUTPUT);
         if (isInput) operationTypes.add(OperationType.INPUT);
         if (isTransfer) operationTypes.add(OperationType.TRANSFER);
 
-        operations = mainController.getOperationByDatesAndTypes(dateRange, operationTypes);
-
-        List<Map<String, String>> parentData = new ArrayList<>();
-        List<List<Map<String, String>>> childData = new ArrayList<>();
-
-        Map<String, String> tempMap;
+        operations = operationController.getOperationByDatesAndTypes(dateRange, operationTypes);
 
         Map<Date, List<Operation>> operationMapByDate = operations.stream().collect(Collectors.groupingBy(Operation::getDate));
 
-        Comparator<Date> comparator = Comparator.naturalOrder();
-
+        Comparator<Date> comparator = Comparator.reverseOrder();
         SortedMap<Date, List<Operation>> sortedMap = new TreeMap<>(comparator);
-
         sortedMap.putAll(operationMapByDate);
 
-
         for (Map.Entry<Date, List<Operation>> entry : sortedMap.entrySet()) {
-            tempMap = new HashMap<>();
-            tempMap.put("date", Util.dateToString(entry.getKey()));
-            parentData.add(tempMap);
+            String parentDate = Util.dateToString(entry.getKey());
+            DTO parent = new DTO(parentDate);
+            parent.setParentId(parentDate);
+            parent.setParent(true);
 
-            List<Map<String, String>> childDataItem = new ArrayList<>();
+            BigDecimal eventSumm = BigDecimal.ZERO;
+
+            states.add(parent);
 
             List<Operation> value = entry.getValue();
 
             for (Operation operation : value) {
-                tempMap = new HashMap<>();
-                tempMap.put("operation", operation.getAccount() + " " + operation.getCategory() + " " + operation.getSumm().toString());
-                childDataItem.add(tempMap);
-            }
+                String category = operation.getCategory().getName();
+                BigDecimal summ = operation.getSumm();
+                String description = operation.getDescription();
+                Account account = operation.getAccount();
+                int icon = operation.getCategory().getType().getIcon();
 
-            childData.add(childDataItem);
+                DTO child = new DTO(category, summ.toString(), description, account.getName(), icon);
+                child.setParentId(parentDate);
+
+                eventSumm = eventSumm.add(summ);
+                parent.setRightUp(eventSumm.toString());
+                states.add(child);
+            }
         }
 
-        String[] groupFrom = new String[]{"date"};
-        int[] groupTo = new int[]{android.R.id.text1};
-        String[] childFrom = new String[]{"operation"};
-        int[] childTo = new int[]{android.R.id.text1};
-
-        SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
-                this,
-                parentData,
-                android.R.layout.simple_expandable_list_item_1,
-                groupFrom,
-                groupTo,
-                childData,
-                android.R.layout.simple_list_item_1,
-                childFrom,
-                childTo);
-
-        operationElv = findViewById(R.id.elvMain);
-        operationElv.setAdapter(adapter);
+        operationRecyclerView = findViewById(R.id.operationList);
+        OperationDTOAdapter adapter = new OperationDTOAdapter(this, states);
+        operationRecyclerView.setAdapter(adapter);
     }
 
     @SuppressLint("SetTextI18n")
@@ -152,13 +145,13 @@ public class OperationActivity extends AppCompatActivity {
 
         materialDatePicker.addOnPositiveButtonClickListener(
                 (MaterialPickerOnPositiveButtonClickListener<? super Pair<Long, Long>>) selection -> {
-                    Pair<Long, Long> pairOfDates = (Pair<Long, Long>) materialDatePicker.getSelection();
+                    Pair<Long, Long> pairOfDates = materialDatePicker.getSelection();
                     if (pairOfDates != null) {
                         startPeriod = new Date(pairOfDates.first);
                         endPeriod = new Date(pairOfDates.second);
                     }
                     pickDateButton.setText(Util.dateToString(startPeriod) + "\n" + Util.dateToString(endPeriod));
-                    fillOperationElv();
+                    fillOperationRecyclerView();
                 });
 
         pickDateButton.setText(dateRange.getStringStart() + "\n" + dateRange.getStringEnd());
@@ -206,17 +199,25 @@ public class OperationActivity extends AppCompatActivity {
 
         outputOperationsCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             isOutput = isChecked;
-            fillOperationElv();
+            fillOperationRecyclerView();
         });
 
         CheckBox inputOperationsCheckBox = findViewById(R.id.inputOperationsCheckBox);
-        boolean inputOperations = inputOperationsCheckBox.isChecked();
 
         inputOperationsCheckBox.setChecked(true);
 
         inputOperationsCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             isInput = isChecked;
-            fillOperationElv();
+            fillOperationRecyclerView();
+        });
+
+        CheckBox transferOperationsCheckBox = findViewById(R.id.transferOperationsCheckBox);
+
+        transferOperationsCheckBox.setChecked(true);
+
+        transferOperationsCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            isTransfer = isChecked;
+            fillOperationRecyclerView();
         });
 
     }

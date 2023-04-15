@@ -13,9 +13,9 @@ import java.sql.SQLException;
 import ru.veryprosto.homefinance.db.dao.CategoryDAO;
 import ru.veryprosto.homefinance.db.dao.OperationDAO;
 import ru.veryprosto.homefinance.db.dao.AccountDAO;
-import ru.veryprosto.homefinance.db.model.Category;
-import ru.veryprosto.homefinance.db.model.Operation;
-import ru.veryprosto.homefinance.db.model.Account;
+import ru.veryprosto.homefinance.model.Category;
+import ru.veryprosto.homefinance.model.Operation;
+import ru.veryprosto.homefinance.model.Account;
 
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
@@ -26,7 +26,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "homefinance.db";
 
     //с каждым увеличением версии, при нахождении в устройстве БД с предыдущей версией будет выполнен метод onUpgrade();
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     //ссылки на DAO соответствующие сущностям, хранимым в БД
     private AccountDAO accountDAO = null;

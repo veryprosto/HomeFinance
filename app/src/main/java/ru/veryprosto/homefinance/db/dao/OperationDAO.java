@@ -5,7 +5,7 @@ import com.j256.ormlite.support.ConnectionSource;
 
 import java.sql.SQLException;
 
-import ru.veryprosto.homefinance.db.model.Operation;
+import ru.veryprosto.homefinance.model.Operation;
 
 public class OperationDAO extends BaseDaoImpl<Operation, Integer> {
 

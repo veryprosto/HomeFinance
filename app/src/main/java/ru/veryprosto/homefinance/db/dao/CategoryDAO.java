@@ -5,7 +5,7 @@ import com.j256.ormlite.support.ConnectionSource;
 
 import java.sql.SQLException;
 
-import ru.veryprosto.homefinance.db.model.Category;
+import ru.veryprosto.homefinance.model.Category;
 
 public class CategoryDAO extends BaseDaoImpl<Category, Integer> {
 

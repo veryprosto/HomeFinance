@@ -22,21 +22,24 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
-import ru.veryprosto.homefinance.MainController;
+import ru.veryprosto.homefinance.controller.AccountController;
+import ru.veryprosto.homefinance.controller.CategoryController;
 import ru.veryprosto.homefinance.R;
-import ru.veryprosto.homefinance.db.model.AccountType;
-import ru.veryprosto.homefinance.db.model.Category;
-import ru.veryprosto.homefinance.db.model.Operation;
-import ru.veryprosto.homefinance.db.model.Account;
-import ru.veryprosto.homefinance.db.model.OperationType;
+import ru.veryprosto.homefinance.controller.OperationController;
+import ru.veryprosto.homefinance.model.AccountType;
+import ru.veryprosto.homefinance.model.Category;
+import ru.veryprosto.homefinance.model.Operation;
+import ru.veryprosto.homefinance.model.Account;
+import ru.veryprosto.homefinance.model.OperationType;
 import ru.veryprosto.homefinance.util.Util;
 
 
 public class OperationEditActivity extends AppCompatActivity {
 
-    private MainController mainController;
+    private CategoryController categoryController;
+    private OperationController operationController;
+    private AccountController accountController;
     private Spinner accountSpinner;
     private Spinner accountToSpinner;
     private Spinner categorySpinner;
@@ -57,7 +60,9 @@ public class OperationEditActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void init() {
-        mainController = MainController.getInstance();
+        categoryController = CategoryController.getInstance();
+        operationController = OperationController.getInstance();
+        accountController = AccountController.getInstance();
 
         descriptionInput = findViewById(R.id.input_description);
         summInput = findViewById(R.id.input_summ);
@@ -97,15 +102,12 @@ public class OperationEditActivity extends AppCompatActivity {
             BigDecimal summ = new BigDecimal(summInput.getText().toString()); //todo добавить валидацию ввода
             Date operationDate = Util.stringToDate((String) dateTextView.getText());
 
-
             if (operationType==OperationType.TRANSFER){
-                mainController.createTransferOperation(account, accountTo, summ, operationDate);
+                operationController.createTransferOperation(account, accountTo, summ, operationDate);
             } else {
                 Operation operation = new Operation(description, account, category, operationDate, summ);
-                mainController.createOperation(operation);
+                operationController.createOperation(operation);
             }
-
-
             returnAndRefreshPreviousActivity();
         });
     }
@@ -114,7 +116,7 @@ public class OperationEditActivity extends AppCompatActivity {
     private void initCategorySpinner(OperationType type) {
         categorySpinner = findViewById(R.id.categorySpinner);
 
-        List<Category> categories = mainController.getCategoriesByTypes(type);
+        List<Category> categories = categoryController.getCategoriesByTypes(type);
 
         categoryArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         categoryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -125,7 +127,7 @@ public class OperationEditActivity extends AppCompatActivity {
     private void initAccountSpinner() {
         accountSpinner = findViewById(R.id.accountSpinner);
 
-        List<Account> accounts = mainController.getAccountsByTypes(AccountType.DEBITCARD);
+        List<Account> accounts = accountController.getAccountsByTypes(AccountType.DEBITCARD, AccountType.CASH, AccountType.DEPOSIT);
         ArrayAdapter<Account> accountArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, accounts);
         accountArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         accountSpinner.setAdapter(accountArrayAdapter);
@@ -135,7 +137,7 @@ public class OperationEditActivity extends AppCompatActivity {
     private void initAccountToSpinner() {
         accountToSpinner = findViewById(R.id.accountToSpinner);
 
-        List<Account> accounts = mainController.getAccountsByTypes(AccountType.DEBITCARD);
+        List<Account> accounts = accountController.getAccountsByTypes(AccountType.DEBITCARD, AccountType.CASH, AccountType.DEPOSIT);
         ArrayAdapter<Account> accountArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, accounts);
         accountArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         accountToSpinner.setAdapter(accountArrayAdapter);
@@ -185,7 +187,7 @@ public class OperationEditActivity extends AppCompatActivity {
                             (dialog, id) -> {
                                 String userText = userInput.getText().toString();
                                 Category newCategory = new Category(userText, operationType);
-                                mainController.createCategory(newCategory);
+                                categoryController.createCategory(newCategory);
                                 initCategorySpinner(operationType);
                             })
                     .setNegativeButton("Отмена",

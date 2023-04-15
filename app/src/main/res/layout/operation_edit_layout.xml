@@ -18,22 +18,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-
     <TextView
         android:id="@+id/dateTextView"
         style="@style/Widget.AppCompat.EditText"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginTop="100dp"
+        android:background="@drawable/edit_text_style"
         android:ellipsize="start"
         android:gravity="center"
         android:textSize="18sp"
-        android:background="@drawable/edit_text_style"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-         />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/accountSpinner"
@@ -83,11 +80,11 @@
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
+        android:background="@drawable/edit_text_style"
         android:ellipsize="start"
         android:gravity="center"
-        android:inputType="numberSigned|numberDecimal"
         android:hint="Сумма"
-        android:background="@drawable/edit_text_style"
+        android:inputType="numberSigned|numberDecimal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/categorySpinner" />
 
@@ -97,13 +94,12 @@
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
+        android:background="@drawable/edit_text_style"
         android:ellipsize="start"
         android:gravity="center"
         android:hint="Примечание"
-        android:background="@drawable/edit_text_style"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_summ"
-         />
+        app:layout_constraintTop_toBottomOf="@+id/input_summ" />
 
     <ImageButton
         android:id="@+id/saveOperationBtn"

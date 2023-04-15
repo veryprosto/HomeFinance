@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:padding="10dp" >
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/tv"
@@ -17,8 +16,27 @@
     <EditText
         android:id="@+id/input_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-        <requestFocus />
+        android:layout_height="wrap_content">
+
+
     </EditText>
+
+    <Spinner
+        android:id="@+id/accountCategorySpinner"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/edit_text_style"
+        android:ellipsize="start"
+        android:gravity="center"
+        android:hint="Кошелёк"
+        android:textAlignment="center">
+
+    </Spinner>
+
+    <requestFocus />
+
+
 
 </LinearLayout>

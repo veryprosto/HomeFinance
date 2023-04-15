@@ -1,4 +1,4 @@
-package ru.veryprosto.homefinance.db.model;
+package ru.veryprosto.homefinance.model;
 
 import android.os.Build;
 
