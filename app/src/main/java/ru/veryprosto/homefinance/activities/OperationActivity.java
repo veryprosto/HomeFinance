@@ -32,13 +32,13 @@ import ru.veryprosto.homefinance.controller.OperationController;
 import ru.veryprosto.homefinance.model.Account;
 import ru.veryprosto.homefinance.model.Operation;
 import ru.veryprosto.homefinance.model.OperationType;
-import ru.veryprosto.homefinance.temp.OperationDTOAdapter;
+import ru.veryprosto.homefinance.util.DTOAdapter;
 import ru.veryprosto.homefinance.util.DateRange;
 import ru.veryprosto.homefinance.util.Util;
 
 public class OperationActivity extends AppCompatActivity {
     private OperationController operationController;
-    private List<DTO> states;
+    private List<DTO> dtos;
     private RecyclerView operationRecyclerView;
 
     private Date startPeriod;
@@ -48,6 +48,7 @@ public class OperationActivity extends AppCompatActivity {
     private boolean isTransfer;
     private List<Operation> operations;
     private DateRange dateRange;
+    private DTOAdapter adapter;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -80,7 +81,7 @@ public class OperationActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void fillOperationRecyclerView() {
-        states = new ArrayList<>();
+        dtos = new ArrayList<>();
 
         List<OperationType> operationTypes = new ArrayList<>();
 
@@ -104,7 +105,7 @@ public class OperationActivity extends AppCompatActivity {
 
             BigDecimal eventSumm = BigDecimal.ZERO;
 
-            states.add(parent);
+            dtos.add(parent);
 
             List<Operation> value = entry.getValue();
 
@@ -120,13 +121,15 @@ public class OperationActivity extends AppCompatActivity {
 
                 eventSumm = eventSumm.add(summ);
                 parent.setRightUp(eventSumm.toString());
-                states.add(child);
+                dtos.add(child);
             }
         }
 
         operationRecyclerView = findViewById(R.id.operationList);
-        OperationDTOAdapter adapter = new OperationDTOAdapter(this, states);
+        adapter = new DTOAdapter(this, dtos);
         operationRecyclerView.setAdapter(adapter);
+
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -219,6 +222,5 @@ public class OperationActivity extends AppCompatActivity {
             isTransfer = isChecked;
             fillOperationRecyclerView();
         });
-
     }
 }
