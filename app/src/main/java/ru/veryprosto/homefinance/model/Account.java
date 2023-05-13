@@ -1,8 +1,7 @@
 package ru.veryprosto.homefinance.model;
 
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -10,6 +9,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Objects;
 
 @DatabaseTable
 public class Account {
@@ -22,8 +22,14 @@ public class Account {
     @DatabaseField(canBeNull = false)
     private AccountType type;
 
-    @ForeignCollectionField(eager = true)
-    private Collection<Operation> operations;
+    @DatabaseField(defaultValue = "true")
+    private boolean active = true;
+
+    @ForeignCollectionField(eager = true, foreignFieldName = "firstAccount")
+    private Collection<Operation> operationsAccountFirst;
+
+    @ForeignCollectionField(eager = true, foreignFieldName = "secondAccount")
+    private Collection<Operation> operationsAccountSecond;
 
     public Account() {
     }
@@ -31,6 +37,7 @@ public class Account {
     public Account(String name, AccountType type) {
         this.name = name;
         this.type = type;
+        this.active = true;
     }
 
     public Integer getId() {
@@ -53,22 +60,53 @@ public class Account {
         this.type = type;
     }
 
-    public Collection<Operation> getOperations() {
-        return operations;
+    public Collection<Operation> getOperationsAccountFirst() {
+        return operationsAccountFirst;
     }
 
-    public void setOperations(Collection<Operation> operations) {
-        this.operations = operations;
+    public Collection<Operation> getOperationsAccountSecond() {
+        return operationsAccountSecond;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public BigDecimal getTotal() {
-        return operations.stream().map(Operation::getSumm).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal inputOperationsSumm = getOperationsSummByType(OperationType.INPUT);
+        BigDecimal outputOperationsSumm = getOperationsSummByType(OperationType.OUTPUT);
+        BigDecimal outputTransferOperationsSumm = getOperationsSummByType(OperationType.TRANSFER);
+        BigDecimal inputTransferOperationsSumm = operationsAccountSecond.stream().filter(
+                        o -> o.getSecondAccount() != null)
+                .map(Operation::getSumm).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return inputOperationsSumm.add(inputTransferOperationsSumm).subtract(outputOperationsSumm).subtract(outputTransferOperationsSumm);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    public BigDecimal getOperationsSummByType(OperationType operationType) {
+        return operationsAccountFirst.stream().filter(o -> o.getCategory().getType() == operationType).map(Operation::getSumm).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return id.equals(account.id) && name.equals(account.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

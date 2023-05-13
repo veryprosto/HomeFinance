@@ -1,3 +1,40 @@
 <resources>
     <string name="app_name">HomeFinance</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="balance">Баланс</string>
+    <string name="inputs">Доходы</string>
+    <string name="outputs">Расходы</string>
+    <string name="transfers">Переводы</string>
+    <string name="input_to_account">зачислить на счет</string>
+    <string name="output_from_account">списать со счета</string>
+    <string name="output_operation">Расходная операция</string>
+    <string name="input_operation">Доходная операция</string>
+    <string name="transfer_operation">Перевод</string>
+    <string name="output">Расход</string>
+    <string name="input">Доход</string>
+    <string name="transfer">Перевод</string>
+    <string name="operation_date">дата операции</string>
+    <string name="category">категория</string>
+    <string name="summ">сумма</string>
+    <string name="notes">примечание</string>
+    <string name="input_name">Введите название</string>
+    <string name="account_type">тип счета</string>
+    <string name="name">название</string>
+    <string name="cancel">отмена</string>
+    <string name="save">сохранить</string>
+    <string name="remove">удалить</string>
+    <string name="show_inactive">показать неактивные</string>
+    <string name="active">активный</string>
+
+
 </resources>

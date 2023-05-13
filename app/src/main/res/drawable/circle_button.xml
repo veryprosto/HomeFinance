@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/purple_200"/>
+            <solid android:text=""/>
+            <solid android:src="@drawable/add"/>
+            <solid android:elevation="6dp"/>
+            <solid android:stateListAnimator="@null"/>
+            <solid android:translationZ="10dp"/>
+        </shape>
+    </item>
+</selector>

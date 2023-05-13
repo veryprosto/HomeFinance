@@ -9,7 +9,6 @@ import ru.veryprosto.homefinance.model.Category;
 import ru.veryprosto.homefinance.model.OperationType;
 
 public class CategoryController {
-
     private static CategoryController instance;
 
     private final CategoryDAO categoryDAO = HelperFactory.getHelper().getCategoryDAO();
@@ -42,6 +41,14 @@ public class CategoryController {
     public List<Category> getCategoriesByTypes(OperationType... types) {
         try {
             return categoryDAO.queryBuilder().where().in("type", types).query();
+        } catch (SQLException e) {
+            throw new RuntimeException(e); //TODO: Обработать исключение
+        }
+    }
+
+    public List<Category> getCategories() {
+        try {
+            return categoryDAO.queryForAll();
         } catch (SQLException e) {
             throw new RuntimeException(e); //TODO: Обработать исключение
         }

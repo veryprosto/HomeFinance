@@ -1,12 +1,18 @@
 package ru.veryprosto.homefinance.util;
 
+import android.annotation.SuppressLint;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class DateRange {
     private Date start;
     private Date end;
+
+    @SuppressLint("SimpleDateFormat")
+    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 
     public DateRange() {
     }
@@ -17,10 +23,12 @@ public class DateRange {
     }
 
     public Date getStart() {
-        return start == null ? new GregorianCalendar(1901, 0, 1).getTime() : start;
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return start == null ? calendar.getTime() : start;
     }
 
-    public Date getStartIncudeStartDate() {
+    public Date getStartIncludeStartDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(getStart());
         calendar.add(Calendar.DATE, -1);
@@ -32,7 +40,9 @@ public class DateRange {
     }
 
     public Date getEnd() {
-        return end == null ? new GregorianCalendar(5000, 0, 1).getTime() : end;
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DATE));
+        return end == null ? calendar.getTime() : end;
     }
 
     public void setEnd(Date end) {
@@ -40,10 +50,26 @@ public class DateRange {
     }
 
     public String getStringStart() {
-        return Util.dateToString(getStart());
+        return dateToString(getStart());
     }
 
     public String getStringEnd() {
-        return Util.dateToString(getEnd());
+        return dateToString(getEnd());
+    }
+
+    public static String dateToString(Date date) {
+        return FORMAT.format(date);
+    }
+
+    public static Date stringToDate(String stringDate) {
+        try {
+            return FORMAT.parse(stringDate);
+        } catch (ParseException e) {
+            throw new RuntimeException(e); //todo обработать!
+        }
+    }
+
+    public boolean isInDiapason(Date date) {
+        return date.after(getStartIncludeStartDate()) && date.before(getEnd());
     }
 }

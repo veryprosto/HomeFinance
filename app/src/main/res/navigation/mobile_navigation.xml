@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_operation">
+
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="ru.veryprosto.homefinance.ui.account.AccountFragment"
+        android:label="Счета"
+        tools:layout="@layout/fragment_account">
+        <action
+            android:id="@+id/nav_account_to_nav_edit_account"
+            app:destination="@id/nav_edit_account" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_edit_account"
+        android:name="ru.veryprosto.homefinance.ui.account.AccountEditFragment"
+        android:label="Редактирование счета"
+        tools:layout="@layout/fragment_account_edit">
+        <action
+            android:id="@+id/nav_edit_account_to_nav_account"
+            app:destination="@id/nav_account" />
+        <argument
+            android:name="accountId"
+            android:defaultValue="0" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_operation"
+        android:name="ru.veryprosto.homefinance.ui.operation.OperationFragment"
+        android:label="Операции"
+        tools:layout="@layout/fragment_operation">
+        <action
+            android:id="@+id/nav_operation_to_nav_edit_operation"
+            app:destination="@id/nav_edit_operation" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_edit_operation"
+        android:name="ru.veryprosto.homefinance.ui.operation.OperationEditFragment"
+        android:label="Редактирование операции"
+        tools:layout="@layout/fragment_operation_edit">
+        <action
+            android:id="@+id/nav_edit_operation_to_nav_operation"
+            app:destination="@id/nav_operation" />
+        <argument
+            android:name="operationId"
+            android:defaultValue="0" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_category"
+        android:name="ru.veryprosto.homefinance.ui.category.CategoryFragment"
+        android:label="Категории"
+        tools:layout="@layout/fragment_category" />
+
+    <fragment
+        android:id="@+id/nav_debt"
+        android:name="ru.veryprosto.homefinance.ui.debt.DebtFragment"
+        android:label="Долги"
+        tools:layout="@layout/fragment_debt" />
+
+    <fragment
+        android:id="@+id/nav_budget"
+        android:name="ru.veryprosto.homefinance.ui.budget.BudgetFragment"
+        android:label="Бюджет"
+        tools:layout="@layout/fragment_budget" />
+
+    <fragment
+        android:id="@+id/nav_report"
+        android:name="ru.veryprosto.homefinance.ui.report.ReportFragment"
+        android:label="Отчеты"
+        tools:layout="@layout/fragment_report" />
+
+</navigation>
